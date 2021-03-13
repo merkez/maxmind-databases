@@ -3,6 +3,7 @@
 This repository contains weekly updated MaxMind Databases. 
 
  - GeoLite2-Country
+ - GeoLite2-City
  - GeoLite2-ASN  
 
 more databases and different formats could be added in time. 
@@ -15,6 +16,6 @@ More detail regarding to that requirement can be found here:
 
 To remove that requirement I have created this mini repository to download and release weekly updated databases from MaxMind. 
  
-The workflow file can be run manually and it will run every week at 00.00 on Monday. 
+The workflow file can be run manually and it will run every week at 10:18 on Friday.
 
 All downloaded files can be directly accessed from [RELEASES](https://github.com/mrtrkmnhub/maxmind-databases/releases)
