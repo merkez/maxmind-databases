@@ -46,3 +46,16 @@ def get_asn_data():
     )
 
 
+def get_city_data():
+    """
+    Download GeoLiteCity data from Maxmind DB
+    """
+    _ = MaxMindDB((
+            "https://download.maxmind.com/app/geoip_download?"
+            "edition_id=GeoLite2-City&"
+            "license_key={license_key}&"
+            "suffix=tar.gz"
+    ).format(
+            license_key=get_license_key(),
+    ), "city"
+    )
