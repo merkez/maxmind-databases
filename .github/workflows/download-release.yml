@@ -7,7 +7,7 @@ on:
         description: Git Ref (Optional)
         required: false
   schedule:
-    - cron: '0 0 * * 1' # every monday at 00:00
+    - cron: '18 10 * * 5' # At 10:18 on Friday.
 
 jobs:
   build:
