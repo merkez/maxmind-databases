@@ -1,0 +1,56 @@
+name: Download & Release GeoLite Country and ASN Databases
+
+on:
+  workflow_dispatch: # enable manual run
+    inputs:
+      git-ref:
+        description: Git Ref (Optional)
+        required: false
+  schedule:
+    - cron: '0 0 * * 1' # every monday at 00:00
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+
+      - name: Install Tar
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install tar -y
+
+      - name: Download files
+        env:
+          MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
+        run : |
+          python main.py
+
+      - name: Get current date
+          id: date
+          run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.date.outputs.date }}
+          release_name: MaxMind Databases Weekly Update - Date ${{ steps.date.outputs.date }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Assets
+        uses: shogo82148/actions-upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./data/*.tar.gz
+
