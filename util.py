@@ -1,11 +1,8 @@
 import requests
 import os
-import subprocess
-import time
-from datetime import datetime, timedelta
+from datetime import datetime
 import logging
 from pathlib import Path
-import maxminddb
 
 """
 Lookups in the MaxMind GeoLite2 databases.
@@ -35,7 +32,8 @@ class MaxMindDB:
     # name given by MaxMind, name of the extracted DB, directory of the downloaded file from MaxMind
     helpers = {
         "asn": ['GeoLite2-ASN_', 'GeoLite2-ASN.mmdb', str(Path(directory, ("GeoLite2-ASN-{date}.tar.gz").format(date=datetime.today().strftime('%Y%m%d'))))],
-        "cc": ['GeoLite2-Country_', 'GeoLite2-Country.mmdb', str(Path(directory, ("GeoLite2-Country-{date}.tar.gz").format(date=datetime.today().strftime('%Y%m%d'))))]
+        "cc": ['GeoLite2-Country_', 'GeoLite2-Country.mmdb', str(Path(directory, ("GeoLite2-Country-{date}.tar.gz").format(date=datetime.today().strftime('%Y%m%d'))))],
+        "city": ['GeoLite2-City_', 'GeoLite2-City.mmdb',str(Path(directory, ("GeoLite2-City-{date}.tar.gz").format(date=datetime.today().strftime('%Y%m%d'))))]
     }
 
 
@@ -71,19 +69,6 @@ class MaxMindDB:
             )
             logger.error(msg)
             raise Exception(msg)
-        self.unpack()
-
-    def unpack(self):
-        """
-        Extract MaxMind DB
-        """
-        if os.path.exists(self.helpers[self.query][2]):
-            subprocess.Popen(['tar', '-xzf', self.helpers[self.query][2]], cwd=directory)
-            time.sleep(2)
-        else:
-            msg = 'Error extract DB on get_db '
-            logger.error(msg)
-            raise Exception(msg)
 
     def get_db_path(self):
         """
@@ -101,12 +86,3 @@ class MaxMindDB:
             ))
         else:
             return None
-
-    def open_db(self):
-        country_code_db_path = self.get_db_path()
-        reader = maxminddb.open_database(country_code_db_path)
-        return reader
-
-    def get_data(self, ip_address):
-        reader = self.open_db()
-        return reader.get(ip_address)
