@@ -36,14 +36,26 @@ jobs:
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
-
+    
+      - name: Empty commit push
+        run: |
+          git config --global user.email "robotcuk@randommail.com"
+          git config --global user.name "robotcuk"
+          git commit --allow-empty -m "MaxMind Files Updated: ${{ steps.date.outputs.date }}"
+          git tag -a ${{ steps.date.outputs.date }} -m "Database Update: ${{ steps.date.outputs.date }}"
+          git push origin ${{ steps.date.outputs.date }}
+          git push origin -f master
+        env:
+          GITHUB_TOKEN: ${{ secrets.ROBOTCUK }}
+    
+    
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.date.outputs.date }}
+          tag_name: ${{ steps.date.outputs.date }} 
           release_name: MaxMind Databases Weekly Update - Date ${{ steps.date.outputs.date }}
           draft: false
           prerelease: false
